@@ -7,6 +7,37 @@ import Control.Applicative
 import Core (JsonValue (..), Parser (Parser), parseChar, parseString)
 import Number (parseNumber)
 
+-- <JSON_VALUE>       ::= <JSON_NULL>
+--                     |  <JSON_BOOL>
+--                     |  <JSON_STRING>
+--                     |  <NUMBER>
+--                     |  <JSON_ARRAY>
+--                     |  <JSON_OBJECT>
+--
+-- <JSON_NULL>        ::= "null"
+--
+-- <JSON_BOOL>        ::= "true"
+--                     |  "false"
+--
+-- <JSON_STRING>      ::= '"' <CHARACTERS> '"'
+--
+-- <CHARACTERS>       ::= /* any allowed string content, including escapes */
+--
+--
+-- <JSON_ARRAY>       ::= "[" <ELEMENTS> "]"
+--                     |  "[" "]"
+--
+-- <ELEMENTS>         ::= <JSON_VALUE>
+--                     |  <JSON_VALUE> "," <ELEMENTS>
+--
+-- <JSON_OBJECT>      ::= "{" <MEMBERS> "}"
+--                     |  "{" "}"
+--
+-- <MEMBERS>          ::= <PAIR>
+--                     |  <PAIR> "," <MEMBERS>
+--
+-- <PAIR>             ::= <JSON_STRING> ":" <JSON_VALUE>
+
 parseJsonNull :: Parser JsonValue
 parseJsonNull = JsonNull <$ parseString "null"
 
