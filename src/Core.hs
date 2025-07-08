@@ -1,8 +1,13 @@
-module Core (JsonValue (..), Parser (runParser, Parser), parseChar, parseString)
+{-# HLINT ignore "Use lambda-case" #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
+module Core (JsonValue (..), Parser (runParser, Parser), parseChar, parseString, satisfy, eatBlanks)
 where
 
 import Control.Applicative
 import qualified Data.Bifunctor
+import Data.Char (isSpace)
+import Data.Functor (void)
 
 data JsonValue
     = JsonNull
@@ -10,7 +15,7 @@ data JsonValue
     | JsonString String
     | JsonNumber Double
     | JsonArray [JsonValue]
-    | JsonObject [(String, JsonValue)]
+    | JsonObject [(JsonValue, JsonValue)]
     deriving (Show)
 
 newtype Parser a
@@ -49,3 +54,13 @@ parseChar ch = Parser p
 
 parseString :: String -> Parser String
 parseString = traverse parseChar
+
+satisfy :: (Char -> Bool) -> Parser Char
+satisfy fn = Parser $ \input -> case input of
+    [] -> Left ""
+    (c : cs)
+        | fn c -> Right (c, cs)
+        | otherwise -> Left ""
+
+eatBlanks :: Parser ()
+eatBlanks = void $ many (satisfy isSpace)
