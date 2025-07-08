@@ -6,19 +6,19 @@ import Core (JsonValue (..), Parser (Parser), eatBlanks, parseChar, parseString)
 import Data.Functor (($>))
 import Number (parseNumber)
 
--- <JSON_NULL>        ::= "null"
+-- <JSON_NULL> ::= "null"
 parseJsonNull :: Parser JsonValue
 parseJsonNull = JsonNull <$ parseString "null"
 
--- <JSON_BOOL>        ::= "true" | "false"
+-- <JSON_BOOL> ::= "true" | "false"
 parseJsonBool :: Parser JsonValue
 parseJsonBool = (JsonBool True <$ parseString "true") <|> (JsonBool False <$ parseString "false")
 
--- <STRING_LITERAL>       ::= /* any allowed string content, including escapes */
+-- <STRING_LITERAL> ::= /* any allowed string content, including escapes */
 parseStringLiteral :: Parser String
 parseStringLiteral = Parser $ \s -> let (result, rest) = span (/= '"') s in Right (result, rest)
 
--- <JSON_STRING>      ::= '"' <STRING_LITERAL> '"'
+-- <JSON_STRING> ::= '"' <STRING_LITERAL> '"'
 parseJsonString :: Parser JsonValue
 parseJsonString = parseChar '"' *> (JsonString <$> parseStringLiteral) <* parseChar '"'
 
@@ -26,7 +26,7 @@ parseJsonString = parseChar '"' *> (JsonString <$> parseStringLiteral) <* parseC
 parseJsonNumber :: Parser JsonValue
 parseJsonNumber = parseNumber >>= \number -> return $ JsonNumber $ read number
 
--- <ELEMENTS>         ::= <JSON_VALUE> | <JSON_VALUE> "," <ELEMENTS>
+-- <ELEMENTS> ::= <JSON_VALUE> | <JSON_VALUE> "," <ELEMENTS>
 parseElements :: Parser [JsonValue]
 parseElements =
     ( do
@@ -39,11 +39,11 @@ parseElements =
     )
         <|> pure <$> parseJsonValue
 
--- <JSON_ARRAY>       ::= "[" <ELEMENTS> "]" | "[" "]"
+-- <JSON_ARRAY> ::= "[" <ELEMENTS> "]" | "[" "]"
 parseJsonArray :: Parser JsonValue
 parseJsonArray = parseChar '[' *> eatBlanks *> (JsonArray <$> parseElements) <* eatBlanks <* parseChar ']'
 
--- <PAIR>             ::= <JSON_STRING> ":" <JSON_VALUE>
+-- <PAIR> ::= <JSON_STRING> ":" <JSON_VALUE>
 parsePair :: Parser (JsonValue, JsonValue)
 parsePair = do
     key <- parseJsonString
@@ -53,7 +53,7 @@ parsePair = do
     value <- parseJsonValue
     return (key, value)
 
--- <MEMBERS>          ::= <PAIR> | <PAIR> "," <MEMBERS>
+-- <MEMBERS> ::= <PAIR> | <PAIR> "," <MEMBERS>
 parseMembers :: Parser [(JsonValue, JsonValue)]
 parseMembers =
     ( do
@@ -66,7 +66,7 @@ parseMembers =
     )
         <|> pure <$> parsePair
 
--- <JSON_OBJECT>      ::= "{" <MEMBERS> "}" | "{" "}"
+-- <JSON_OBJECT> ::= "{" <MEMBERS> "}" | "{" "}"
 parseJsonObject :: Parser JsonValue
 parseJsonObject =
     ( do
@@ -79,12 +79,7 @@ parseJsonObject =
     )
         <|> JsonObject <$> ((parseChar '{' *> eatBlanks *> parseChar '}') $> [])
 
--- <JSON_VALUE>       ::= <JSON_NULL>
---                     |  <JSON_BOOL>
---                     |  <JSON_STRING>
---                     |  <NUMBER>
---                     |  <JSON_ARRAY>
---                     |  <JSON_OBJECT>
+-- <JSON_VALUE> ::= <JSON_NULL> | <JSON_BOOL> | <JSON_STRING> | <NUMBER> | <JSON_ARRAY> | <JSON_OBJECT>
 parseJsonValue :: Parser JsonValue
 parseJsonValue =
     asum

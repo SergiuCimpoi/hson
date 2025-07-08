@@ -10,7 +10,7 @@ import Control.Applicative ((<|>))
 import Core (Parser (Parser), parseChar)
 import Data.Char (isDigit)
 
--- <SIGN>   ::= "" | "-"
+-- <SIGN> ::= "" | "-"
 parseSign :: Parser String
 parseSign = pure <$> parseChar '-' <|> pure ""
 
@@ -20,15 +20,15 @@ parseOneNine = Parser $ \input -> case input of
     (c : cs)
         | c >= '1' && c <= '9' -> Right (pure c, cs)
         | otherwise -> Left ""
-    [] -> Left ""
+    "" -> Left ""
 
--- <DIGIT>  ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+-- <DIGIT> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 parseDigit :: Parser Char
 parseDigit = Parser $ \input -> case input of
     (c : cs)
         | isDigit c -> Right (c, cs)
         | otherwise -> Left "invalid digit"
-    [] -> Left "empty string"
+    "" -> Left "empty string"
 
 -- <DIGITS> ::= "" | <DIGIT> <DIGITS>
 parseDigits :: Parser String
@@ -40,11 +40,9 @@ parseDigits =
     )
         <|> pure ""
 
--- <INT>    ::= "0" | <ONENINE> <DIGITS>
+-- <INT> ::= "0" | <ONENINE> <DIGITS>
 parseInt :: Parser String
-parseInt =
-    pure <$> parseChar '0'
-        <|> ((++) <$> parseOneNine <*> parseDigits)
+parseInt = pure <$> parseChar '0' <|> ((++) <$> parseOneNine <*> parseDigits)
 
 -- <DIGITS_NONZERO> ::= <DIGIT> | <DIGIT> <DIGITS_NONZERO>
 parseDigitsNonZero :: Parser String
@@ -56,7 +54,7 @@ parseDigitsNonZero =
     )
         <|> pure <$> parseDigit
 
--- <FRAC>   ::= "" | "." <DIGITS_NONZERO>
+-- <FRAC> ::= "" | "." <DIGITS_NONZERO>
 parseFrac :: Parser String
 parseFrac =
     ( do
@@ -72,8 +70,8 @@ parseSignExp =
     pure <$> (parseChar '+' <|> parseChar '-')
         <|> pure ""
 
--- <E>      ::= "e" | "E"
--- <EXP>    ::= "" | <E> <SIGN_EXP> <DIGITS_NONZERO>
+-- <E> ::= "e" | "E"
+-- <EXP> ::= "" | <E> <SIGN_EXP> <DIGITS_NONZERO>
 parseExp :: Parser String
 parseExp =
     ( do

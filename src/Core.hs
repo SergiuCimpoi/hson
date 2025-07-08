@@ -44,7 +44,7 @@ instance Alternative Parser where
 parseChar :: Char -> Parser Char
 parseChar ch = Parser p
   where
-    p [] = Left "error empty string"
+    p "" = Left "error empty string"
     p (c : cs)
         | ch == c = Right (ch, cs)
         | otherwise = Left $ "error: expected " ++ [ch] ++ ", got " ++ [c]
@@ -54,7 +54,7 @@ parseString = traverse parseChar
 
 satisfy :: (Char -> Bool) -> Parser Char
 satisfy fn = Parser $ \input -> case input of
-    [] -> Left ""
+    "" -> Left ""
     (c : cs)
         | fn c -> Right (c, cs)
         | otherwise -> Left ""
