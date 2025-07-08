@@ -18,10 +18,7 @@ data JsonValue
     | JsonObject [(JsonValue, JsonValue)]
     deriving (Show)
 
-newtype Parser a
-    = Parser
-    { runParser :: String -> Either String (a, String)
-    }
+newtype Parser a = Parser {runParser :: String -> Either String (a, String)}
 
 instance Functor Parser where
     fmap f (Parser p) = Parser $ fmap (Data.Bifunctor.first f) . p

@@ -12,9 +12,7 @@ parseJsonNull = JsonNull <$ parseString "null"
 
 -- <JSON_BOOL>        ::= "true" | "false"
 parseJsonBool :: Parser JsonValue
-parseJsonBool =
-    (JsonBool True <$ parseString "true")
-        <|> (JsonBool False <$ parseString "false")
+parseJsonBool = (JsonBool True <$ parseString "true") <|> (JsonBool False <$ parseString "false")
 
 -- <STRING_LITERAL>       ::= /* any allowed string content, including escapes */
 parseStringLiteral :: Parser String
