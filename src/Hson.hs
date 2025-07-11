@@ -44,9 +44,11 @@ parseJsonArray :: Parser JsonValue
 parseJsonArray = parseChar '[' *> eatBlanks *> (JsonArray <$> parseElements) <* eatBlanks <* parseChar ']'
 
 -- <PAIR> ::= <JSON_STRING> ":" <JSON_VALUE>
-parsePair :: Parser (JsonValue, JsonValue)
+parsePair :: Parser (String, JsonValue)
 parsePair = do
-    key <- parseJsonString
+    _ <- parseChar '"'
+    key <- parseStringLiteral
+    _ <- parseChar '"'
     _ <- eatBlanks
     _ <- parseChar ':'
     _ <- eatBlanks
@@ -54,7 +56,7 @@ parsePair = do
     return (key, value)
 
 -- <MEMBERS> ::= <PAIR> | <PAIR> "," <MEMBERS>
-parseMembers :: Parser [(JsonValue, JsonValue)]
+parseMembers :: Parser [(String, JsonValue)]
 parseMembers =
     ( do
         pair <- parsePair

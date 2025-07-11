@@ -19,16 +19,16 @@ parseOneNine :: Parser String
 parseOneNine = Parser $ \input -> case input of
     (c : cs)
         | c >= '1' && c <= '9' -> Right (pure c, cs)
-        | otherwise -> Left ""
-    "" -> Left ""
+        | otherwise -> Left ["expected a digit 1..9, got " ++ take 10 (c : cs)]
+    "" -> Left ["empty input while parsing a number"]
 
 -- <DIGIT> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 parseDigit :: Parser Char
 parseDigit = Parser $ \input -> case input of
     (c : cs)
         | isDigit c -> Right (c, cs)
-        | otherwise -> Left "invalid digit"
-    "" -> Left "empty string"
+        | otherwise -> Left ["invalid digit"]
+    "" -> Left ["empty string"]
 
 -- <DIGITS> ::= "" | <DIGIT> <DIGITS>
 parseDigits :: Parser String
